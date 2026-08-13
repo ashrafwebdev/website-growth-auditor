@@ -3,13 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
-    paths: ["website-growth-auditor/**"]
   pull_request:
-    paths: ["website-growth-auditor/**"]
-
-defaults:
-  run:
-    working-directory: website-growth-auditor
 
 jobs:
   test:

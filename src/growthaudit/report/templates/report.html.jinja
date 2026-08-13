@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Website Audit Report — {{ report.url }}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: light; }
+  body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; background: #f6f7f9; color: #1a1a1a; margin: 0; padding: 2rem; }
+  .container { max-width: 860px; margin: 0 auto; }
+  header { background: #111827; color: #fff; border-radius: 12px; padding: 2rem; display: flex; align-items: center; gap: 1.5rem; }
+  .grade { font-size: 3rem; font-weight: 800; width: 5rem; height: 5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: {{ grade_color }}; color: #111827; }
+  header h1 { margin: 0 0 .25rem; font-size: 1.25rem; }
+  header .url { opacity: .8; font-size: .9rem; word-break: break-all; }
+  section { background: #fff; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  h2 { margin-top: 0; font-size: 1.1rem; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: .5rem .25rem; border-bottom: 1px solid #eee; }
+  .issue { border-left: 4px solid #ccc; padding: .75rem 1rem; margin-bottom: .75rem; border-radius: 6px; background: #fafafa; }
+  .issue.critical { border-color: #dc2626; } .issue.high { border-color: #ea580c; }
+  .issue.medium { border-color: #ca8a04; } .issue.low { border-color: #6b7280; }
+  .issue .sev { font-size: .7rem; text-transform: uppercase; font-weight: 700; letter-spacing: .04em; color: #6b7280; }
+  .issue .fix { font-size: .9rem; color: #374151; margin-top: .35rem; }
+  footer.cta { margin-top: 1.5rem; padding: 1.5rem; border-radius: 12px; background: #111827; color: #fff; text-align: center; }
+  footer.cta a { color: #93c5fd; }
+  .muted { color: #6b7280; font-size: .85rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="grade">{{ report.overall_grade }}</div>
+    <div>
+      <h1>Website Audit Report</h1>
+      <div class="url">{{ report.url }}</div>
+      <div class="muted">Scanned {{ report.scanned_at }} · Overall score {{ report.overall_score }}/100</div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Category scores</h2>
+    <table>
+      <tr><th>Category</th><th>Score</th><th>Grade</th><th>Issues</th></tr>
+      {% for cat in report.categories %}
+      <tr>
+        <td>{{ cat.category|title }}</td>
+        <td>{{ cat.score }}/100</td>
+        <td>{{ cat.grade }}</td>
+        <td>{{ cat.results|rejectattr('passed')|list|length }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </section>
+
+  <section>
+    <h2>{{ issues|length }} issue(s) found</h2>
+    {% if not issues %}
+      <p>No issues found — nice work!</p>
+    {% endif %}
+    {% for issue in issues %}
+    <div class="issue {{ issue.severity.value }}">
+      <div class="sev">{{ issue.severity.value }}</div>
+      <strong>{{ issue.title }}</strong> — {{ issue.message }}
+      {% if issue.fix %}<div class="fix">Fix: {{ issue.fix }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </section>
+
+  {% if branding %}
+  <footer class="cta">
+    <div>Powered by <strong>growthaudit</strong> — free &amp; open source
+      (<a href="https://github.com/ashrafwebdev/website-growth-auditor">GitHub</a>)</div>
+    <div style="margin-top:.5rem;">Built by <strong>ashrafwebdev</strong> — need help fixing what this found?
+      <a href="{{ contact_url }}">Get in touch</a></div>
+  </footer>
+  {% endif %}
+</div>
+</body>
+</html>
